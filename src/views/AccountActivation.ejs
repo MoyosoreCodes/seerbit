@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="https://res.cloudinary.com/spray/image/upload/v1647967143/samples/default.jpg">
+    <title>Account | Verification </title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito&display=normal ');
+    * {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        text-align: center;
+        box-sizing: border-box;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .reset {
+        background: white;
+        max-width: 570px;
+        border-radius: 00.7rem;
+        margin: 0 auto;
+        padding: 30px;
+        transform: translateY(30%);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        text-align: center ;
+    }
+
+    .section {
+        display: inline-block;
+        align-items: center;
+        justify-content: center;
+        width: 334px;
+        height: 341px;
+        background: #F9F0F0;
+        border-radius: 16px;
+        padding-top: 50px;
+        border:15px auto 15px;
+    }
+
+    .message {
+        display: inline-block;
+        font-weight: 400;
+        font-size: 17px;
+        padding:30px
+    }
+</style>
+<body>
+    <div class="reset ">
+        <div class="section">
+            <% if (status == 201) { %>
+                <svg  width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle opacity="0.2" cx="54" cy="54" r="54" fill="#3F51B5"/>
+                    <circle cx="54" cy="54" r="36" fill="#38A3A5"/>
+                    <path d="M67.3008 43.9838C66.8678 43.9967 66.4569 44.1776 66.155 44.4883L49.0001 61.6433L43.5118 56.155C43.3582 55.995 43.1743 55.8673 42.9707 55.7793C42.7672 55.6914 42.5481 55.6449 42.3264 55.6426C42.1046 55.6404 41.8847 55.6824 41.6794 55.7662C41.4741 55.85 41.2876 55.974 41.1308 56.1308C40.974 56.2876 40.85 56.4741 40.7662 56.6794C40.6824 56.8847 40.6404 57.1046 40.6427 57.3263C40.6449 57.5481 40.6914 57.7671 40.7794 57.9707C40.8673 58.1742 40.9951 58.3582 41.155 58.5118L47.8217 65.1784C48.1342 65.4909 48.5581 65.6664 49.0001 65.6664C49.442 65.6664 49.8659 65.4909 50.1784 65.1784L68.5118 46.8451C68.7526 46.611 68.9171 46.3096 68.9837 45.9804C69.0503 45.6512 69.0159 45.3095 68.885 45.0002C68.7541 44.6909 68.5328 44.4284 68.2501 44.247C67.9674 44.0656 67.6366 43.9739 67.3008 43.9838Z" fill="white"/>
+                </svg>
+            <% } %>
+            <% if (status == 500) { %>
+                <svg width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle opacity="0.2" cx="54" cy="54" r="54" fill="#3F51B5"/>
+                    <circle cx="54" cy="54" r="36" fill="#CA2630" fill-opacity="0.73"/>
+                </svg>
+            <% } %>
+                <div class="message"> <%= message %>  </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+{
+  "name": "seerbit",
+  "version": "1.0.0",
+  "description": "seerbit api integration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js",
+    "start": "NODE_ENV=production node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MoyosoreCodes/seerbit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MoyosoreCodes/seerbit/issues"
+  },
+  "homepage": "https://github.com/MoyosoreCodes/seerbit#readme",
+  "dependencies": {
+    "axios": "^0.21.4",
+    "bcryptjs": "^2.4.3",
+    "config": "^3.3.6",
+    "cors": "^2.8.5",
+    "deep-email-validator": "^0.1.21",
+    "dotenv": "^16.0.1",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-validator": "^6.12.1",
+    "google-auth-library": "^8.5.2",
+    "googleapis": "^107.0.0",
+    "http-errors": "^2.0.0",
+    "http-status": "^1.5.2",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "mongoose": "5.10",
+    "morgan": "^1.10.0",
+    "node-cron": "^3.0.2",
+    "nodemailer": "^6.7.2",
+    "pino": "^8.3.1",
+    "pino-pretty": "^8.1.0",
+    "qrcode": "^1.4.4",
+    "seerbit-nodejs": "^0.3.0",
+    "socket.io": "^4.2.0",
+    "uuid4": "^2.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

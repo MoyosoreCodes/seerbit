@@ -9,13 +9,15 @@ const productSchema = new Schema({
         required: true
     },
     name: String,
+    description: String,
     url: String,
     images: [String],
     price: {
         type: mongoose.Types.Decimal128, 
         default: 0.00, 
     },
-    quantity: Number
+    quantity: Number,
+    paymentLinkUrl: String
 }, {
     timestamps: true,
     toJSON: { getters: true },

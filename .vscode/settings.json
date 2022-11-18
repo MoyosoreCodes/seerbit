@@ -18,5 +18,10 @@
         "titleBar.inactiveBackground": "#a52a2a99",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "brown"
+    "peacock.color": "brown",
+    "cSpell.words": [
+        "Hackathon",
+        "seerbit",
+        "Symble"
+    ]
 }

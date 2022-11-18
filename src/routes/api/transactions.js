@@ -29,7 +29,10 @@ router.get('/', async (req, res) => {
 // bank-info?countryCode=NG?name=Access Bank
 //funding main account with paystack
 // https://spray-dev.herokuapp.com/api/transactions/payment-webhook?gateway=paystack
-router.post('/payment-webhook', transactionController.handleWebhook)
+router.post('/payment-webhook', transactionController.handleWebhook);
+router.post('/pocket', auth(), transactionController.createPocket);
+router.get('/bank-info', transactionController.getBankInfo)
+
 
 
 module.exports = router

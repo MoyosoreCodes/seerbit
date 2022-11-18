@@ -1,12 +1,11 @@
-const userService = require('../services/user.service');
-const walletService = require('../services/wallet.service');
+const {userService, walletService, transactionService} = require('../services');
 const { transaction_type, payment_status } = require('../models/transaction.model');
 const { ApiError } = require('../utils/ApiError');
 const httpStatus = require('http-status');
 const logger = require('../config/logger');
 const mongoose = require('mongoose');
-const transactionService = require('../services/transaction.service');
 const { actions } = require('../models/wallet.model');
+const seerbitService = require('../services/seerbit.service');
 
 const sessionSettings = {
     "readConcern": { "level": "snapshot" },
@@ -112,18 +111,95 @@ module.exports = {
 
     fundWallet: async (req, res, next) => {
         try{
-            
+            // create a new transaction
+            const {user, body} = req;
+            let result;
+            const session = await mongoose.startSession();
+            try {
+                session.startTransaction(sessionSettings);
+                const recipient = await walletService.getUserWallet(user.id);
+
+                const transactionDetails = {
+                    type: transaction_type.FUND.name,
+                    recipient: recipient?.id,
+                    amount: body.amount,
+                    description: body.description || `funding ${recipient?.username}`
+                }
+    
+                const newTransaction = await transactionService.create(transactionDetails, payment_status.SUCCESS);
+                await walletService.updateTransactions(recipient.user._id, newTransaction._id, session)
+    
+                const paymentData = {
+                    email: recipient.user.email,
+                    amount: body.amount,
+                    paymentReference: newTransaction._id
+                }
+    
+                result = await seerbitService.initializePayment(paymentData);
+                await session.commitTransaction();
+                session.endSession();
+
+            } catch (error) {
+                await session.abortTransaction();
+                session.endSession();
+                throw error
+            }
+
+            res.status(httpStatus.OK).json({
+                message: 'successful',
+                data: result
+            })
+
         } catch(error) {
             logger.error(error);
             next(error)
         }
     },
+    
     withdraw: async (req, res, next) => {
         try {
-            
+            const {body: {amount, accountNumber, bankCode}} = req
+            const withdrawData = {
+                reference: "TEST_TRAuoiiuyN23w_22aaa", 
+                amount, 
+                accountNumber, 
+                bankCode
+            }
+            const payload = await seerbitService.withdraw(withdrawData);
+            res.status(httpStatus.OK).json({
+                message: payload.status,
+                data: payload
+            })
+            // const {user, body} = req;
+
+            // let {amount} = body;
+            // amount = +amount;
+            // const session = await mongoose.startSession();
+            // const sessionSettings = {
+            //     "readConcern": { "level": "snapshot" },
+            //     "writeConcern": { "w": "majority" }
+            // }
+
+            // try {
+            //     session.startTransaction(sessionSettings);
+            //     const {wallet_id, username, _id: userId} = await userService.getUser({_id: user.id});
+
+
+
+                
+            // } catch (error) {
+            //     await session.abortTransaction();
+            //     console.log(error.message)
+            //     logger.error(error.message);
+            //     next(error);
+            // } finally {
+            //     session.endSession();
+            // }
+
+
         } catch (error) {
-            logger.error(error.message);
-            next(error);
+            logger.error(error.message)
+            next(error)
         }
-    },
+    }
 }

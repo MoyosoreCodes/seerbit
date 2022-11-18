@@ -2,7 +2,8 @@ const {emailService, tokenService, authService, walletService, userService } = r
 const { ApiError } = require('../utils/ApiError');
 const httpStatus = require('http-status');
 const { url, client_url } = require('../config')
-const logger = require('../config/logger')
+const logger = require('../config/logger');
+const { default: axios } = require('axios');
 
 module.exports = {
     register: async (req, res, next) => {

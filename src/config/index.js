@@ -132,5 +132,12 @@ module.exports = {
         key: process.env.PUSHER_KEY,
         secret: process.env.PUSHER_SECRET,
         cluster: process.env.PUSHER_CLUSTER
+    },
+
+    seerbit: {
+        publicKey: process.env.SEERBIT_PUBLIC_KEY,
+        secretKey: process.env.SEERBIT_SECRET_KEY,
+        bearerToken: process.env.SEERBIT_TOKEN,
+        url: process.env.SEERBIT_URL,
     }
 };

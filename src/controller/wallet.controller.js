@@ -123,6 +123,7 @@ module.exports = {
                     type: transaction_type.FUND.name,
                     recipient: recipient?.id,
                     amount: body.amount,
+                    status: payment_status.PENDING,
                     description: body.description || `funding ${recipient?.username}`
                 }
     

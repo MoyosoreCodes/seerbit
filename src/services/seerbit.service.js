@@ -20,7 +20,7 @@ module.exports = {
             const {email, amount, paymentReference} = params;
             const standardCheckout = new StandardCheckout(client)
             const {status, data} = await standardCheckout.Initialize({
-                callbackUrl: `${api_url}/verify`,
+                callbackUrl: `${api_url}/api/transactions/verify`,
                 email, amount, paymentReference,
                 country: "NG",
                 currency: "NGN",

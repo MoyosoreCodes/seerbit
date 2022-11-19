@@ -309,6 +309,7 @@ module.exports = {
 			}
 	
 			event.room_token = createToken(payload, app_secret, {...token_options, jwtid: uuid4()});
+			console.log({template_id, room_token: event.room_token})
 	
 			const config = {
 				method: requestMethods['POST'],
@@ -320,7 +321,7 @@ module.exports = {
 				data: JSON.stringify({
 					name: event.event_code,
 					description: event.description,
-					template_id, 
+					template_id: template_id, 
 					region: "eu"
 				})
 			}
@@ -329,6 +330,7 @@ module.exports = {
 			await event.save();
 			return event.room_id;
 		}catch (error) {
+			console.log(error.response.config)
 			throw new ApiError(error.response.data.code, error.message, error.response.data.message)
 		}
     },

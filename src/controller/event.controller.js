@@ -181,8 +181,11 @@ module.exports = {
             const participantIsOwner = event.owner.id.toString() == participant._id.toString()
             // validate the token first
             const roomTokenValid = eventService.validateRoomToken(event)
+
             // !only owner can create the room
+            console.log({participantIsOwner})
             if(participantIsOwner && !event.room_token || participantIsOwner && !roomTokenValid) {
+                console.log('here')
                 await eventService.setRoomId(event);
             }
 

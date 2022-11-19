@@ -118,9 +118,10 @@ module.exports = {
         try {
             // await userService.savePin({_id: req.user.id}, req.body.pin)
             const result = await walletService.setPin(req.user.id, req.body.pin)
+            const updatedUser = await userService.getUser({_id: req.user.id})
             res.status(httpStatus.OK).json({
                 message:`successfully saved pin`,
-                data: result
+                data: updatedUser
             })
         } catch (error) { 
             logger.error(error.message)

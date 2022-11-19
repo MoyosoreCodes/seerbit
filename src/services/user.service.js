@@ -28,8 +28,6 @@ const create = async (params) => {
     if (existingUser) throw new ApiError(httpStatus.BAD_REQUEST, 'Email/Username already taken');
 
     // validating email
-    const {valid, reason, validators} = await emailValidator.validate(params['email'])
-    if(!valid) throw new ApiError(httpStatus.BAD_REQUEST, 'detected invalid email',`email is invalid, flag: ${validators[reason].reason}`)
     const user = new User(params);
 
     user.generateUserId();

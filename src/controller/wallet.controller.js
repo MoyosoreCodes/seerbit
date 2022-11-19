@@ -1,11 +1,10 @@
-const {userService, walletService, transactionService} = require('../services');
+const {userService, walletService, transactionService, seerbitService} = require('../services');
 const { transaction_type, payment_status } = require('../models/transaction.model');
 const { ApiError } = require('../utils/ApiError');
 const httpStatus = require('http-status');
 const logger = require('../config/logger');
 const mongoose = require('mongoose');
 const { actions } = require('../models/wallet.model');
-const seerbitService = require('../services/seerbit.service');
 
 const sessionSettings = {
     "readConcern": { "level": "snapshot" },
@@ -13,6 +12,27 @@ const sessionSettings = {
 }
 
 module.exports = {
+    validatePin: async function(req, res, next) {
+        try {
+            const {user, body} = req
+            const {pin} = body;
+
+            if(!pin) throw new ApiError(httpStatus.BAD_REQUEST, 'pin not provided')
+            const userWallet = await walletService.getUserWallet({user: user.id});
+
+            if(!userWallet.pin) throw new ApiError(httpStatus.BAD_REQUEST, 'user does not have pin');
+
+            const result = await userWallet.validatePin(pin)
+
+            res.status(httpStatus.OK).json({
+                message: 'success',
+                result
+            })
+        } catch (error) {
+            logger.error(error.message);
+            next(error)
+        }
+    },
     // ! in progress
     send: async function(req, res, next) {
         let {amount, to, description} = req.body;

@@ -204,12 +204,14 @@ module.exports = {
 		return result;        
 	},
 
-	accessPaidEvent: async (event, user_id, session = {}) => {
+	payEventFee: async (event_code, user_id, session = {}) => {
+		const event = await Event.findOne({event_code})
 		const {participants, class:eventClass, access_fee, _id} = event;
 
 		if(eventClass !== event_class.PAID) throw new ApiError(httpStatus.BAD_REQUEST, `invalid request, event is ${eventClass}`)
-		const user = participants.find((participant) =>  participant.user_id.toString() === user_id );
-		if(!user) throw new ApiError(httpStatus.UNAUTHORIZED, `user is not participating in event`)
+		const user = participants.find(participant => participant.user_id.toString() == user_id && participant.is_active);
+		
+		if(!user) throw new ApiError(httpStatus.UNAUTHORIZED, `user is not participating in event`, 'Cannot pay event fee because user has not joined event')
 		if(user?.has_paid_fee) throw new ApiError(httpStatus.OK, `user has already paid access fee`)
 		const updatedEvent = await Event.findOneAndUpdate(
 			{_id, 'participants.user_id': user_id, 'participants.has_paid_fee': {'$ne': true}},
@@ -220,7 +222,7 @@ module.exports = {
 					"amount": +Decimal128.fromString(access_fee.toString())
 				}
 			},
-			{session}
+			{session, strict: false}
 		)
 		if(!updatedEvent) throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `error giving participant access`)
 		return updatedEvent;

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
 const eventController = require('../../controller/event.controller');
+const pin = require('../../middleware/pin');
 
 router
     .route('/')

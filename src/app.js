@@ -29,7 +29,7 @@ app.head('/status', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.send(`spray Api running, click <a href='https://symble.onrender.com/'> here to view apps </a> `)
+    res.send(`Welcome, click <a href='https://symble.onrender.com/'> here </a> to view app`)
 });
 
 // api routes

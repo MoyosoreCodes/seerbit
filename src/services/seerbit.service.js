@@ -1,5 +1,5 @@
 const { Client, Config, StandardCheckout } = require("seerbit-nodejs");
-const { seerbit: { publicKey, secretKey, bearerToken, url }, client_url, seerbit } = require('../config');
+const { seerbit: { publicKey, secretKey, bearerToken, url }, url: api_url } = require('../config');
 const config = new Config({ publicKey, secretKey, bearerToken });
 const axios = require('axios');
 
@@ -20,13 +20,11 @@ module.exports = {
             const {email, amount, paymentReference} = params;
             const standardCheckout = new StandardCheckout(client)
             const {status, data} = await standardCheckout.Initialize({
-                callbackUrl: `${client_url}/wallet?method=fund`,
+                callbackUrl: `${api_url}/verify`,
                 email, amount, paymentReference,
                 country: "NG",
                 currency: "NGN",
             });
-    
-            console.log({data})
     
             return data
         } catch (error) {

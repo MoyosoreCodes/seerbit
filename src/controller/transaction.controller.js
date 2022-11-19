@@ -6,6 +6,7 @@ const _ = require('lodash');
 const { ApiError } = require('../utils/ApiError');
 const httpStatus = require('http-status');
 const logger = require('../config/logger');
+const { client_url } = require('../config');
 
 module.exports = {
     getBankInfo: async (req, res, next) => {
@@ -109,6 +110,56 @@ module.exports = {
         } catch (error) {
             logger.error(error.message);
             next(error);
+        }
+    },
+
+    // seerbit calls the callback url with the following query params
+    // code=00&message=Approved&reference=63792506573e0b00391c7a41&linkingreference=SEERBIT919660171668883774701
+    verifySeerbitTransaction: async function (req, res, next) {
+        try {
+            const {code, message, reference} = req.query
+            // find transaction by reference and update it 
+            if (code != '00' || message != 'Approved') {
+                res.redirect(`${client_url}wallet?method=fund&status=${message}`);
+                return
+            }
+
+            const session = await mongoose.startSession();
+            const sessionSettings = {
+                "readConcern": { "level": "snapshot" },
+                "writeConcern": { "w": "majority" }
+            }
+
+            try {
+                session.startTransaction(sessionSettings);
+
+                const pendingTransaction = await transactionService.getOne({_id: reference, status: payment_status.PENDING});
+                const recipient = await userService.getUser({wallet_id: pendingTransaction.recipient})
+
+                console.log({pendingTransaction, recipient});
+
+                const [credited, fnTxnCount] = await Promise.all([
+                    walletService.updateBalance(actions.credit, recipient.id, pendingTransaction.amount, session),
+                    walletService.updateTransactions(recipient.id, pendingTransaction._id, session)
+                ])
+
+                if(!fnTxnCount) throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "unable to update wallet transactions");
+    
+                await session.commitTransaction();            
+                res.redirect(`${client_url}wallet?method=fund&status=${payment_status.SUCCESS}`);
+            } catch (error) {
+                await session.abortTransaction();
+                console.log(error.message)
+                logger.error(error.message);
+                next(error);
+            } finally {
+                session.endSession();
+            }
+
+            // also update user balance
+        } catch (error) {
+            logger.error(error.message)
+            next(error)
         }
     },
     /**

@@ -147,14 +147,14 @@ module.exports = {
                 if(!fnTxnCount) throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "unable to update wallet transactions");
     
                 await session.commitTransaction();            
+                session.endSession();
                 res.redirect(`${client_url}wallet?method=fund&status=${payment_status.SUCCESS}`);
             } catch (error) {
                 await session.abortTransaction();
+                session.endSession();
                 console.log(error.message)
                 logger.error(error.message);
                 next(error);
-            } finally {
-                session.endSession();
             }
 
             // also update user balance

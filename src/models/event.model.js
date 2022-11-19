@@ -128,7 +128,7 @@ const setEventUrl = function(event_code) {
         return 0
     }
     // https://symble-app.herokuapp.com/event/
-    const event_url = `${url}/event/${event_code}`;
+    const event_url = `${url}event/${event_code}`;
     this.url = event_url;
     return event_url
 }

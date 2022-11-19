@@ -60,14 +60,15 @@ module.exports = {
 
     handleWebhook: async function (req, res, next) {
         try {
-            const [notificationRequestItem] = req.body.notificationItems;
+            const [notificationBody] = req.body.notificationItems;
+            const {notificationRequestItem} = notificationBody;
             console.log({notificationRequestItem});
    
             if(notificationRequestItem.eventType == "transaction") {
                 let {amount, email, status} = notificationRequestItem.data
                 console.log({amount, email, status})
 
-                amount = +amount;
+                amount = +parseFloat(value).toFixed(2);
                 const session = await mongoose.startSession();
                 const sessionSettings = {
                     "readConcern": { "level": "snapshot" },
@@ -83,11 +84,11 @@ module.exports = {
                         recipient: wallet_id,
                         amount,
                         status: payment_status.SUCCESS,
-                        description: `${username} top up with ${amount}`
+                        description: `${username} funded ${amount}`
                     }
     
                     const [ credited, newTransaction ] = await Promise.all([
-                        walletService.updateBalance( actions.credit, userId, fundAmount, session ),
+                        walletService.updateBalance( actions.credit, userId, amount, session ),
                         transactionService.create(transactionDetails, payment_status.SUCCESS)
                     ]);
     

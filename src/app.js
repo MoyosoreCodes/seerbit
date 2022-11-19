@@ -28,12 +28,8 @@ app.head('/status', (req, res) => {
     res.status(200).end();
 });
 
-app.get('/docs', (req, res) => {
-    res.send(`spray Api running, click <a href='https://documenter.getpostman.com/view/12993294/UV5TGfgL#aaa18ef5-89b6-4640-8760-2dd43ffe84b2'> here for documentation </a> `)
-});
-
 app.get('/', (req, res) => {
-    res.sendFile(path.join(path.resolve(__dirname, '..'), 'public', 'index.html'));
+    res.send(`spray Api running, click <a href='https://symble.onrender.com/'> here to view apps </a> `)
 });
 
 // api routes

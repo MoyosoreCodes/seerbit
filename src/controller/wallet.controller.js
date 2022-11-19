@@ -126,8 +126,7 @@ module.exports = {
                     description: body.description || `funding ${recipient?.username}`
                 }
     
-                const newTransaction = await transactionService.create(transactionDetails, payment_status.SUCCESS);
-                await walletService.updateTransactions(recipient.user._id, newTransaction._id, session)
+                const newTransaction = await transactionService.create(transactionDetails, payment_status.PENDING);
     
                 const paymentData = {
                     email: recipient.user.email,

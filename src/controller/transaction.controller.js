@@ -117,9 +117,10 @@ module.exports = {
     // code=00&message=Approved&reference=63792506573e0b00391c7a41&linkingreference=SEERBIT919660171668883774701
     verifySeerbitTransaction: async function (req, res, next) {
         try {
-            const {code, message, reference} = req.query
+            const {message, reference} = req.query
             // find transaction by reference and update it 
-            if (code != '00' || message != 'Approved') {
+            if (!reference) {
+                console.log({message})
                 res.redirect(`${client_url}wallet?method=fund&status=${message}`);
                 return
             }
@@ -139,7 +140,7 @@ module.exports = {
                 console.log({pendingTransaction, recipient});
 
                 const [credited, fnTxnCount] = await Promise.all([
-                    walletService.updateBalance(actions.credit, recipient.id, pendingTransaction.amount, session),
+                    walletService.updateBalance(actions.credit, recipient._id, pendingTransaction.amount, session),
                     walletService.updateTransactions(recipient.id, pendingTransaction._id, session)
                 ])
 

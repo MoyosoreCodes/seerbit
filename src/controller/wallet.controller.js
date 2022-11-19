@@ -18,7 +18,8 @@ module.exports = {
             const {pin} = body;
 
             if(!pin) throw new ApiError(httpStatus.BAD_REQUEST, 'pin not provided')
-            const userWallet = await walletService.getUserWallet({user: user.id});
+            const userWallet = await walletService.getUserWallet(user.id);
+            console.log({pin, userWallet})
 
             if(!userWallet.pin) throw new ApiError(httpStatus.BAD_REQUEST, 'user does not have pin');
 

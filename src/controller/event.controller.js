@@ -322,7 +322,7 @@ module.exports = {
                         session.startTransaction(sessionSettings);
                         const [debited, updatedEvent, participantWallet] = await Promise.all([
                             walletService.updateBalance(actions.debit, user_id, event.access_fee, session),
-                            eventService.payEventFee(event, user_id, session),
+                            eventService.payEventFee(event.event_code, user_id, session),
                             walletService.getUserWallet(user_id)
                         ]);
         

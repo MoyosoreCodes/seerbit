@@ -7,6 +7,7 @@ const httpStatus = require('http-status');
 const {OAuth2Client} = require('google-auth-library');
 const {google_client_id, NODE_ENV} = require('../config');
 const {tokenTypes} = require('../config/tokens');
+const { Wallet } = require('../models/wallet.model');
 const oauthClient = new OAuth2Client(google_client_id)
 
 const select_options = ['-pin -google_id -facebook_id -twitter_id -confirmation_code -amount -is_subAccount -last_login_ime']
@@ -28,10 +29,10 @@ module.exports = {
         if (!user.is_verified && NODE_ENV != 'development') throw new ApiError(httpStatus.UNAUTHORIZED, `${email} not verified, please verify to continue`)
         if (!user.password || user.registered_with !== auth_providers.local) throw new ApiError(httpStatus.BAD_REQUEST, `user account is registered with ${user.registered_with}`);
         if (!await user.comparePassword(password)) throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Credentials');
-
+        const userWallet = await Wallet.findOne({user: user._id, _id: user.wallet_id})
         // if(user.status !== accountStatus.ACTIVE ) throw new ApiError(httpStatus.BAD_REQUEST, "cannot authenticate");
 
-        const hasPin = user.pin ? true : false
+        const hasPin = userWallet.pin ? true : false
         user.last_login_time = Date.now()
         await user.save()
 

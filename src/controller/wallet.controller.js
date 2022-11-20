@@ -145,7 +145,7 @@ module.exports = {
                     recipient: recipient?.id,
                     amount: body.amount,
                     status: payment_status.PENDING,
-                    description: body.description || `funding ${recipient?.username}`
+                    description: body.description || `funding ${recipient?.user.username}`
                 }
     
                 const newTransaction = await transactionService.create(transactionDetails, payment_status.PENDING);

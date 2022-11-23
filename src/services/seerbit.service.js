@@ -5,7 +5,6 @@ const seerbitPublicKey = NODE_ENV == 'development' ? publicTestKey : publicKey;
 const seerbitSecretKey = NODE_ENV == 'development' ? secretTestKey : secretKey;
 const seerbitBearerToken = NODE_ENV == 'development' ? bearerTestToken : bearerToken;
 
-console.log({ NODE_ENV, seerbitPublicKey, seerbitSecretKey, seerbitBearerToken })
 const config = new Config({ publicKey: seerbitPublicKey, secretKey: seerbitSecretKey, bearerToken: seerbitBearerToken });
 const axios = require('axios');
 
@@ -56,14 +55,14 @@ module.exports = {
             const {reference, amount, accountNumber, bankCode} = params
             const config = {
                 headers:{
-                    "Authorization": "Bearer OYoFfVQoeVYjH9dzwHnCZE4ZJ8WUrkeqD+B5HtpOqhicCL9G01/kzTxnqBs/WeGJBpX9F9etXRWB/+Obwff0jpOa18YGk0S0OcCDSu/CW6dAUX/R3eMQ8KWK4rbDaA15",
+                    "Authorization": "Bearer " + seerbitBearerToken,
                     "Content-Type": "application/json"
                 },
                 method: "POST", 
                 url: `https://seerbitapi.com/pocket/api/v2/payout/transfer`,
                 data:{
                     "extTransactionRef": reference, 
-                    "publicKey": "SBPUBK_JG0XWEGGIRSFEGSN4PAEHSI9LYKLNMZF",
+                    "publicKey": seerbitPublicKey,
                     "amount": amount,
                     "accountNumber": accountNumber,
                     "bankCode": bankCode,
@@ -84,13 +83,13 @@ module.exports = {
             const {reference, email, amount, name, description, customizationName} = params
             const config = {
                 headers:{
-                    "Authorization": "Bearer OYoFfVQoeVYjH9dzwHnCZE4ZJ8WUrkeqD+B5HtpOqhicCL9G01/kzTxnqBs/WeGJBpX9F9etXRWB/+Obwff0jpOa18YGk0S0OcCDSu/CW6dAUX/R3eMQ8KWK4rbDaA15",
+                    "Authorization": "Bearer " + seerbitBearerToken,
                     "Content-Type": "application/json"
                 },
                 method: "POST", 
                 url: `https://paymentlink.seerbitapi.com/paymentlink/v2/payLinks/api`,
                 data:{
-                    "publicKey": "SBPUBK_JG0XWEGGIRSFEGSN4PAEHSI9LYKLNMZF",
+                    "publicKey": seerbitPublicKey,
                     "amount": amount,
                     "status": "ACTIVE",
                     "paymentLinkName": name,

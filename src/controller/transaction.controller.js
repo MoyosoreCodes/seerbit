@@ -63,13 +63,12 @@ module.exports = {
         try {
             const [notificationBody] = req.body.notificationItems;
             const {notificationRequestItem} = notificationBody;
-            console.log({notificationRequestItem});
    
             if(notificationRequestItem.eventType == "transaction") {
-                let {amount, email, status} = notificationRequestItem.data
-                console.log({amount, email, status})
+                let {amount, email, reference} = notificationRequestItem.data
+                console.log({amount, email, reference})
 
-                amount = +parseFloat(value).toFixed(2);
+                amount = +parseFloat(amount).toFixed(2);
                 const session = await mongoose.startSession();
                 const sessionSettings = {
                     "readConcern": { "level": "snapshot" },
@@ -78,33 +77,28 @@ module.exports = {
 
                 try {
                     session.startTransaction(sessionSettings);
-                    const {wallet_id, username, _id: userId} = await userService.getUser({email});
+
+                    const pendingTransaction = await transactionService.getOne({_id: reference, status: payment_status.PENDING});
+                    const recipient = await userService.getUser({wallet_id: pendingTransaction.recipient})
     
-                    const transactionDetails = {
-                        type: transaction_type.FUND.name,
-                        recipient: wallet_id,
-                        amount,
-                        status: payment_status.SUCCESS,
-                        description: `${username} funded ${amount}`
-                    }
+                    console.log({pendingTransaction, recipient});
     
-                    const [ credited, newTransaction ] = await Promise.all([
-                        walletService.updateBalance( actions.credit, userId, amount, session ),
-                        transactionService.create(transactionDetails, payment_status.SUCCESS)
-                    ]);
+                    const [credited, fnTxnCount] = await Promise.all([
+                        walletService.updateBalance(actions.credit, recipient._id, pendingTransaction.amount, session),
+                        walletService.updateTransactions(recipient.id, pendingTransaction._id, session)
+                    ])
     
-                    const fnTxnCount = await walletService.updateTransactions( userId, newTransaction._id, session );
                     if(!fnTxnCount) throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "unable to update wallet transactions");
-    
+        
                     await session.commitTransaction();            
-                    res.send(200);
+                    session.endSession();
+                        res.send(200);
                 } catch (error) {
                     await session.abortTransaction();
+                    session.endSession();
                     console.log(error.message)
                     logger.error(error.message);
                     next(error);
-                } finally {
-                    session.endSession();
                 }
             }
         } catch (error) {
@@ -115,54 +109,54 @@ module.exports = {
 
     // seerbit calls the callback url with the following query params
     // code=00&message=Approved&reference=63792506573e0b00391c7a41&linkingreference=SEERBIT919660171668883774701
-    verifySeerbitTransaction: async function (req, res, next) {
-        try {
-            const {message, reference} = req.query
-            // find transaction by reference and update it 
-            if (!reference) {
-                console.log({message})
-                res.redirect(`${client_url}wallet?method=fund&status=${message}`);
-                return
-            }
+    // verifySeerbitTransaction: async function (req, res, next) {
+    //     try {
+    //         const {message, reference} = req.query
+    //         // find transaction by reference and update it 
+    //         if (!reference) {
+    //             console.log({message})
+    //             res.redirect(`${client_url}wallet?method=fund&status=${message}`);
+    //             return
+    //         }
 
-            const session = await mongoose.startSession();
-            const sessionSettings = {
-                "readConcern": { "level": "snapshot" },
-                "writeConcern": { "w": "majority" }
-            }
+    //         const session = await mongoose.startSession();
+    //         const sessionSettings = {
+    //             "readConcern": { "level": "snapshot" },
+    //             "writeConcern": { "w": "majority" }
+    //         }
 
-            try {
-                session.startTransaction(sessionSettings);
+    //         try {
+    //             session.startTransaction(sessionSettings);
 
-                const pendingTransaction = await transactionService.getOne({_id: reference, status: payment_status.PENDING});
-                const recipient = await userService.getUser({wallet_id: pendingTransaction.recipient})
+    //             const pendingTransaction = await transactionService.getOne({_id: reference, status: payment_status.PENDING});
+    //             const recipient = await userService.getUser({wallet_id: pendingTransaction.recipient})
 
-                console.log({pendingTransaction, recipient});
+    //             console.log({pendingTransaction, recipient});
 
-                const [credited, fnTxnCount] = await Promise.all([
-                    walletService.updateBalance(actions.credit, recipient._id, pendingTransaction.amount, session),
-                    walletService.updateTransactions(recipient.id, pendingTransaction._id, session)
-                ])
+    //             const [credited, fnTxnCount] = await Promise.all([
+    //                 walletService.updateBalance(actions.credit, recipient._id, pendingTransaction.amount, session),
+    //                 walletService.updateTransactions(recipient.id, pendingTransaction._id, session)
+    //             ])
 
-                if(!fnTxnCount) throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "unable to update wallet transactions");
+    //             if(!fnTxnCount) throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "unable to update wallet transactions");
     
-                await session.commitTransaction();            
-                session.endSession();
-                res.redirect(`${client_url}wallet?method=fund&status=${payment_status.SUCCESS}`);
-            } catch (error) {
-                await session.abortTransaction();
-                session.endSession();
-                console.log(error.message)
-                logger.error(error.message);
-                next(error);
-            }
+    //             await session.commitTransaction();            
+    //             session.endSession();
+    //             res.redirect(`${client_url}wallet?method=fund&status=${payment_status.SUCCESS}`);
+    //         } catch (error) {
+    //             await session.abortTransaction();
+    //             session.endSession();
+    //             console.log(error.message)
+    //             logger.error(error.message);
+    //             next(error);
+    //         }
 
-            // also update user balance
-        } catch (error) {
-            logger.error(error.message)
-            next(error)
-        }
-    },
+    //         // also update user balance
+    //     } catch (error) {
+    //         logger.error(error.message)
+    //         next(error)
+    //     }
+    // },
     /**
      * * lists all transaction
      * * admin service

@@ -138,6 +138,9 @@ module.exports = {
     seerbit: {
         publicKey: process.env.SEERBIT_PUBLIC_KEY,
         secretKey: process.env.SEERBIT_SECRET_KEY,
+        publicTestKey: process.env.SEERBIT_TEST_PUBLIC_KEY,
+        secretTestKey: process.env.SEERBIT_TEST_SECRET_KEY,
+        bearerTestToken: process.env.SEERBIT_TEST_TOKEN,
         bearerToken: process.env.SEERBIT_TOKEN,
         url: process.env.SEERBIT_URL,
     }

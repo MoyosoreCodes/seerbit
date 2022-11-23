@@ -1,6 +1,12 @@
 const { Client, Config, StandardCheckout } = require("seerbit-nodejs");
-const { seerbit: { publicKey, secretKey, bearerToken, url }, url: api_url } = require('../config');
-const config = new Config({ publicKey, secretKey, bearerToken });
+const { NODE_ENV, seerbit: { publicKey, publicTestKey, secretTestKey, secretKey, bearerToken, bearerTestToken, url }, url: api_url, client_url } = require('../config');
+
+const seerbitPublicKey = NODE_ENV == 'development' ? publicTestKey : publicKey;
+const seerbitSecretKey = NODE_ENV == 'development' ? secretTestKey : secretKey;
+const seerbitBearerToken = NODE_ENV == 'development' ? bearerTestToken : bearerToken;
+
+console.log({ NODE_ENV, seerbitPublicKey, seerbitSecretKey, seerbitBearerToken })
+const config = new Config({ publicKey: seerbitPublicKey, secretKey: seerbitSecretKey, bearerToken: seerbitBearerToken });
 const axios = require('axios');
 
 const client = new Client(config);
@@ -20,7 +26,7 @@ module.exports = {
             const {email, amount, paymentReference} = params;
             const standardCheckout = new StandardCheckout(client)
             const {status, data} = await standardCheckout.Initialize({
-                callbackUrl: `${api_url}/api/transactions/verify`,
+                callbackUrl: `${client_url}wallet`,//${api_url}/api/transactions/verify`,
                 email, amount, paymentReference,
                 country: "NG",
                 currency: "NGN",
